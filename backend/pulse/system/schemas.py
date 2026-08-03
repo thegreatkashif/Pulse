@@ -26,6 +26,16 @@ class UptimeInfo(BaseModel):
     uptime_seconds: int
 
 
+class NetworkInterface(BaseModel):
+    name: str
+    is_up: bool
+    mtu: int
+    speed_mbps: int
+    mac: str | None
+    ipv4: list[str]
+    ipv6: list[str]
+
+
 class SystemInfo(BaseModel):
     hostname: str
     operating_system: str
@@ -35,3 +45,9 @@ class SystemInfo(BaseModel):
     cpu: CPUInfo
     memory: MemoryInfo
     uptime: UptimeInfo
+    
+class NetworkOverview(BaseModel):
+    default_gateway: str | None
+    active_interface: str | None
+    internet_connected: bool
+    interface_count: int
