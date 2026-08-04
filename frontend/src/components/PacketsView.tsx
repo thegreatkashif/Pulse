@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { usePacketSocket } from '../hooks/usePacketSocket'
 import { api } from '../api/client'
 import type { PacketEvent } from '../api/types'
+import type { PacketSocketState } from '../hooks/usePacketSocket'
 
 function formatBytes(num: number): string {
   const units = ['B', 'KB', 'MB', 'GB']
@@ -13,8 +13,8 @@ function formatBytes(num: number): string {
   return `${value.toFixed(1)} TB`
 }
 
-export default function PacketsView() {
-  const { packets, bandwidth, connected } = usePacketSocket()
+export default function PacketsView({ packetSocket }: { packetSocket: PacketSocketState }) {
+  const { packets, bandwidth, connected } = packetSocket
   const [capturing, setCapturing] = useState(false)
   const [selected, setSelected] = useState<PacketEvent | null>(null)
   const [busy, setBusy] = useState(false)

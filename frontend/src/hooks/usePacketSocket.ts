@@ -3,7 +3,7 @@ import type { PacketEvent, BandwidthSample } from '../api/types'
 
 const MAX_PACKETS = 300
 const MAX_BANDWIDTH_SAMPLES = 60
-
+export type PacketSocketState = ReturnType<typeof usePacketSocket>
 export function usePacketSocket() {
   const [packets, setPackets] = useState<PacketEvent[]>([])
   const [bandwidth, setBandwidth] = useState<BandwidthSample[]>([])
