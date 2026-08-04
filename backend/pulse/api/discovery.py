@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from fastapi.concurrency import run_in_threadpool
 
 from pulse.discovery.service import discover_devices, get_local_network
 
@@ -14,4 +15,4 @@ async def network():
 
 @router.get("/network/devices")
 async def devices():
-    return discover_devices()
+    return await run_in_threadpool(discover_devices)

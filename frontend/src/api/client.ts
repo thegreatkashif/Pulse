@@ -1,0 +1,15 @@
+import type { SystemInfo, NetworkInterface, NetworkOverview } from './types'
+
+async function get<T>(path: string): Promise<T> {
+  const res = await fetch(path)
+  if (!res.ok) {
+    throw new Error(`Request to ${path} failed: ${res.status}`)
+  }
+  return res.json() as Promise<T>
+}
+
+export const api = {
+  system: () => get<SystemInfo>('/api/system'),
+  interfaces: () => get<NetworkInterface[]>('/api/system/interfaces'),
+  network: () => get<NetworkOverview>('/api/system/network'),
+}
