@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api/client'
-import type { SystemInfo, NetworkInterface, NetworkOverview } from '../api/types'
+import type { SystemInfo, NetworkInterface, NetworkOverview, NetworkDevice } from '../api/types'
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -26,8 +26,11 @@ export default function Dashboard() {
   const [system, setSystem] = useState<SystemInfo | null>(null)
   const [network, setNetwork] = useState<NetworkOverview | null>(null)
   const [interfaces, setInterfaces] = useState<NetworkInterface[]>([])
+  const [devices, setDevices] = useState<NetworkDevice[]>([])
+  const [devicesLoading, setDevicesLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Fast-changing stats: poll every 5s
   useEffect(() => {
     let cancelled = false
 
@@ -56,6 +59,15 @@ export default function Dashboard() {
       cancelled = true
       clearInterval(interval)
     }
+  }, [])
+
+  // Slow ARP scan: fetch once on mount
+  useEffect(() => {
+    api
+      .devices()
+      .then(setDevices)
+      .catch((err) => setError((err as Error).message))
+      .finally(() => setDevicesLoading(false))
   }, [])
 
   if (error) {
@@ -117,6 +129,24 @@ export default function Dashboard() {
               </div>
             ))}
         </div>
+      </Card>
+
+      <Card title="Devices on Network">
+        {devicesLoading ? (
+          <p className="text-sm text-neutral-400">Scanning…</p>
+        ) : devices.length === 0 ? (
+          <p className="text-sm text-neutral-400">No devices found</p>
+        ) : (
+          <div className="space-y-3">
+            {devices.map((device) => (
+              <div key={device.mac} className="border-t border-neutral-800 pt-2 first:border-t-0 first:pt-0">
+                <Row label="IP" value={device.ip} />
+                <Row label="MAC" value={device.mac} />
+                <Row label="Hostname" value={device.hostname ?? '—'} />
+              </div>
+            ))}
+          </div>
+        )}
       </Card>
     </div>
   )

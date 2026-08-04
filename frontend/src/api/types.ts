@@ -46,3 +46,11 @@ export interface NetworkOverview {
   internet_connected: boolean
   interface_count: number
 }
+
+export interface NetworkDevice {
+  ip: string
+  mac: string
+  hostname: string | null
+  vendor: string | null
+  online:  boolean
+}

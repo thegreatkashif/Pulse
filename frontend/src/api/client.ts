@@ -1,4 +1,4 @@
-import type { SystemInfo, NetworkInterface, NetworkOverview } from './types'
+import type { SystemInfo, NetworkInterface, NetworkOverview, NetworkDevice } from './types'
 
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(path)
@@ -12,4 +12,5 @@ export const api = {
   system: () => get<SystemInfo>('/api/system'),
   interfaces: () => get<NetworkInterface[]>('/api/system/interfaces'),
   network: () => get<NetworkOverview>('/api/system/network'),
+  devices: () => get<NetworkDevice[]>('/api/network/devices')
 }
