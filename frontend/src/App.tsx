@@ -1,11 +1,59 @@
+import { useState } from 'react'
 import Dashboard from './components/Dashboard'
+import PacketsView from './components/PacketsView'
+import TopologyView from './components/TopologyView'
+
+type Tab = 'overview' | 'topology' | 'packets'
 
 function App() {
+  const [tab, setTab] = useState<Tab>('overview')
+
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100">
-      <h1 className="p-6 pb-0 text-2xl font-semibold">Pulse</h1>
-      <Dashboard />
+    <div className="flex h-screen flex-col bg-void text-neutral-100">
+      <header className="flex items-center justify-between border-b border-blood/30 bg-shadow px-6 py-4">
+        <h1 className="bg-linear-to-r from-blood to-venom bg-clip-text text-2xl font-bold text-transparent">
+          PULSE
+        </h1>
+        <nav className="flex gap-1">
+          <TabButton active={tab === 'overview'} onClick={() => setTab('overview')}>
+            Overview
+          </TabButton>
+          <TabButton active={tab === 'topology'} onClick={() => setTab('topology')}>
+            Topology
+          </TabButton>
+          <TabButton active={tab === 'packets'} onClick={() => setTab('packets')}>
+            Live Packets
+          </TabButton>
+        </nav>
+      </header>
+
+      <main className="flex-1 overflow-y-auto">
+        {tab === 'overview' && <Dashboard />}
+        {tab === 'topology' && <TopologyView />}
+        {tab === 'packets' && <PacketsView />}
+      </main>
     </div>
+  )
+}
+
+function TabButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`rounded px-4 py-2 text-sm font-medium uppercase tracking-wide transition ${
+        active ? 'bg-linear-to-r from-blood to-venom text-white' : 'text-neutral-400 hover:text-neutral-100'
+      }`}
+    >
+      {children}
+    </button>
   )
 }
 

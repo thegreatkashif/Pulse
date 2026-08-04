@@ -50,3 +50,6 @@ async def stats_broadcaster(interval: float = 3.0) -> None:
         )
 
         await asyncio.sleep(interval)
+        
+        
+packet_manager = ConnectionManager()

@@ -54,3 +54,21 @@ export interface NetworkDevice {
   vendor: string | null
   online:  boolean
 }
+
+export interface PacketEvent {
+  timestamp: number
+  src_ip: string
+  dst_ip: string
+  src_port: number | null
+  dst_port: number | null
+  protocol: string
+  length: number
+  direction: 'inbound' | 'outbound'
+  summary: string
+}
+
+export interface BandwidthSample {
+  bytes_in: number
+  bytes_out: number
+  timestamp: number
+}
