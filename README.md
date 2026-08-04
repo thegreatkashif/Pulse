@@ -83,15 +83,16 @@ Whether you're a student, researcher, system administrator, cybersecurity profes
 
 ```text
 Pulse/
-├── backend/
-├── frontend/
-├── docs/
-├── deployments/
-├── scripts/
-└── .github/
+└── backend/
+    └── pulse/
+        ├── api/         # HTTP routes
+        ├── config/      # App settings
+        ├── discovery/   # Network device discovery
+        ├── system/      # CPU/memory/host/network info
+        └── utils/       # Shared helpers
 ```
 
----
+Planned additions as features land: `frontend/`, `docs/`, `deployments/`, `scripts/`, `.github/`.
 
 # Roadmap
 
