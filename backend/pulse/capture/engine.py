@@ -10,6 +10,7 @@ from pulse.capture.schemas import PacketEvent
 from pulse.discovery.service import get_local_network
 from pulse.system.network import get_default_gateway
 from pulse.topology.service import TopologyEvidence, classify_topology
+from pulse.capture.dns_logger import extract_dns_query
 
 PROTOCOL_NAMES = {1: "ICMP", 6: "TCP", 17: "UDP"}
 
@@ -69,6 +70,8 @@ class CaptureEngine:
     def _handle_packet(self, packet) -> None:
         if IP not in packet:
             return
+        
+        extract_dns_query(packet)
 
         ip_layer = packet[IP]
         length = len(packet)

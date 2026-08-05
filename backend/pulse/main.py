@@ -11,6 +11,7 @@ from pulse.topology.service import TopologyEvidence
 from pulse.websocket.manager import stats_broadcaster, packet_manager
 from pulse.websocket.router import router as websocket_router
 from pulse.database.db import init_db
+from pulse.capture.dns_router import router as dns_router
 
 
 def _on_packet(event) -> None:
@@ -49,7 +50,9 @@ app = FastAPI(
 
 app.include_router(api_router)
 app.include_router(capture_router)
+app.include_router(dns_router)
 app.include_router(websocket_router)
+
 
 
 @app.get("/", tags=["Root"])
