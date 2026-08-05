@@ -4,14 +4,16 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from pulse.api.router import api_router
+from pulse.capture.dns_router import router as dns_router
 from pulse.capture.engine import engine
 from pulse.capture.router import router as capture_router
 from pulse.config.settings import settings
+from pulse.database.db import get_recent_alerts, init_db
+from pulse.security.detector import detector
+from pulse.security.schemas import SecurityAlert
 from pulse.topology.service import TopologyEvidence
-from pulse.websocket.manager import stats_broadcaster, packet_manager
+from pulse.websocket.manager import alert_manager, packet_manager, stats_broadcaster
 from pulse.websocket.router import router as websocket_router
-from pulse.database.db import init_db
-from pulse.capture.dns_router import router as dns_router
 
 
 def _on_packet(event) -> None:
@@ -26,14 +28,18 @@ async def _on_topology(evidence: TopologyEvidence) -> None:
     await packet_manager.broadcast({"type": "topology", **evidence.model_dump()})
 
 
+def _on_alert(alert: SecurityAlert) -> None:
+    asyncio.create_task(alert_manager.broadcast({"type": "alert", **alert.model_dump()}))
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    
-    
+
     engine.on_packet = _on_packet
     engine.on_bandwidth = _on_bandwidth
     engine.on_topology = _on_topology
+    detector.on_alert = _on_alert
 
     task = asyncio.create_task(stats_broadcaster())
     yield
@@ -54,7 +60,6 @@ app.include_router(dns_router)
 app.include_router(websocket_router)
 
 
-
 @app.get("/", tags=["Root"])
 async def root():
     return {
@@ -62,3 +67,8 @@ async def root():
         "version": settings.version,
         "status": "running",
     }
+
+
+@app.get("/api/security/alerts", tags=["Security"])
+async def security_alerts(limit: int = 100):
+    return get_recent_alerts(limit)

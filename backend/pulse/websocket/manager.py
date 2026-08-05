@@ -34,6 +34,8 @@ class ConnectionManager:
 
 
 manager = ConnectionManager()
+packet_manager = ConnectionManager()
+alert_manager = ConnectionManager()
 
 
 async def stats_broadcaster(interval: float = 3.0) -> None:
@@ -50,6 +52,3 @@ async def stats_broadcaster(interval: float = 3.0) -> None:
         )
 
         await asyncio.sleep(interval)
-        
-        
-packet_manager = ConnectionManager()

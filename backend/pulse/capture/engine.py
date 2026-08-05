@@ -6,11 +6,12 @@ from typing import Awaitable, Callable
 
 from scapy.all import AsyncSniffer, Ether, IP, TCP, UDP, getmacbyip
 
+from pulse.capture.dns_logger import extract_dns_query
 from pulse.capture.schemas import PacketEvent
 from pulse.discovery.service import get_local_network
+from pulse.security.detector import detector
 from pulse.system.network import get_default_gateway
 from pulse.topology.service import TopologyEvidence, classify_topology
-from pulse.capture.dns_logger import extract_dns_query
 
 PROTOCOL_NAMES = {1: "ICMP", 6: "TCP", 17: "UDP"}
 
@@ -45,8 +46,6 @@ class CaptureEngine:
         self.gateway_mac = getmacbyip(self.gateway_ip) if self.gateway_ip else None
         self.loop = asyncio.get_event_loop()
 
-        print(f"[capture] started, gateway_ip={self.gateway_ip}, gateway_mac={self.gateway_mac}")
-
         self.sniffer = AsyncSniffer(
             filter=f"ip and (src host {self.host_ip} or dst host {self.host_ip})",
             prn=self._handle_packet,
@@ -70,7 +69,7 @@ class CaptureEngine:
     def _handle_packet(self, packet) -> None:
         if IP not in packet:
             return
-        
+
         extract_dns_query(packet)
 
         ip_layer = packet[IP]
@@ -91,6 +90,8 @@ class CaptureEngine:
         elif UDP in packet:
             src_port, dst_port = packet[UDP].sport, packet[UDP].dport
 
+        detector.observe_packet(ip_layer.src, dst_port, direction)
+
         event = PacketEvent(
             timestamp=time.time(),
             src_ip=ip_layer.src,
@@ -107,10 +108,6 @@ class CaptureEngine:
             self.loop.call_soon_threadsafe(self.on_packet, event)
 
     def _track_topology_evidence(self, packet, dst_ip: str) -> None:
-        """Uses the real destination MAC of each outbound frame as evidence,
-        not a guess. If dst is outside our subnet and the frame's MAC is the
-        gateway's, that's direct proof of hub-and-spoke routing.
-        """
         if Ether not in packet or self.local_subnet is None or not self.gateway_mac:
             return
 
@@ -127,12 +124,16 @@ class CaptureEngine:
             await asyncio.sleep(interval)
 
             try:
+                current_in, current_out = self._bytes_in, self._bytes_out
+
                 if self.on_bandwidth:
                     await self.on_bandwidth(
-                        {"bytes_in": self._bytes_in, "bytes_out": self._bytes_out, "timestamp": time.time()}
+                        {"bytes_in": current_in, "bytes_out": current_out, "timestamp": time.time()}
                     )
                 self._bytes_in = 0
                 self._bytes_out = 0
+
+                detector.observe_bandwidth(current_in, current_out)
 
                 if self.on_topology:
                     evidence = classify_topology(

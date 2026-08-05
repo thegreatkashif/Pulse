@@ -4,6 +4,7 @@ import socket
 from scapy.all import ARP, Ether, srp
 
 from pulse.discovery.schemas import NetworkDevice
+from pulse.security.detector import detector
 
 
 def get_local_network() -> str:
@@ -21,16 +22,19 @@ def discover_devices(timeout: float = 2.0) -> list[NetworkDevice]:
     packet = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=network)
     answered, _ = srp(packet, timeout=timeout, verbose=False)
 
-    return [
-        NetworkDevice(
-            ip=received.psrc,
-            mac=received.hwsrc,
-            hostname=_resolve_hostname(received.psrc),
-            vendor=None,
-            online=True,
+    devices = []
+    for _, received in answered:
+        detector.observe_arp(received.psrc, received.hwsrc)
+        devices.append(
+            NetworkDevice(
+                ip=received.psrc,
+                mac=received.hwsrc,
+                hostname=_resolve_hostname(received.psrc),
+                vendor=None,
+                online=True,
+            )
         )
-        for _, received in answered
-    ]
+    return devices
 
 
 def _resolve_hostname(ip: str) -> str | None:
