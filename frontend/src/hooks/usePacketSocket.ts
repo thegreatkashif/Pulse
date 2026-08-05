@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import type { PacketEvent, BandwidthSample } from '../api/types'
+import type { PacketEvent, BandwidthSample, TopologyEvidence } from '../api/types'
 
 const MAX_PACKETS = 300
 const MAX_BANDWIDTH_SAMPLES = 60
-export type PacketSocketState = ReturnType<typeof usePacketSocket>
+
 export function usePacketSocket() {
   const [packets, setPackets] = useState<PacketEvent[]>([])
   const [bandwidth, setBandwidth] = useState<BandwidthSample[]>([])
+  const [topology, setTopology] = useState<TopologyEvidence | null>(null)
   const [connected, setConnected] = useState(false)
   const socketRef = useRef<WebSocket | null>(null)
 
@@ -30,6 +31,8 @@ export function usePacketSocket() {
           setPackets((prev) => [data as PacketEvent, ...prev].slice(0, MAX_PACKETS))
         } else if (data.type === 'bandwidth') {
           setBandwidth((prev) => [...prev, data as BandwidthSample].slice(-MAX_BANDWIDTH_SAMPLES))
+        } else if (data.type === 'topology') {
+          setTopology(data as TopologyEvidence)
         }
       }
 
@@ -51,5 +54,7 @@ export function usePacketSocket() {
     }
   }, [])
 
-  return { packets, bandwidth, connected }
+  return { packets, bandwidth, topology, connected }
 }
+
+export type PacketSocketState = ReturnType<typeof usePacketSocket>

@@ -29,7 +29,7 @@ const INTERNET_POS = { x: WIDTH / 2, y: 50 }
 const RADIUS = 170
 
 export default function TopologyView({ packetSocket }: { packetSocket: PacketSocketState }) {
-  const { packets, bandwidth } = packetSocket
+  const { packets, bandwidth, topology } = packetSocket
   const [devices, setDevices] = useState<NetworkDevice[]>([])
   const [network, setNetwork] = useState<NetworkOverview | null>(null)
   const [pulses, setPulses] = useState<Pulse[]>([])
@@ -94,11 +94,28 @@ export default function TopologyView({ packetSocket }: { packetSocket: PacketSoc
   return (
     <div className="flex h-full flex-col gap-4 p-6">
       <div className="rounded-lg border border-venom/30 bg-shadow p-3 text-sm text-neutral-400">
-        Detected topology: <span className="font-semibold text-venom">STAR</span> — every device
-        routes through your default gateway
-        {network?.default_gateway ? ` (${network.default_gateway})` : ''}. Lines pulse{' '}
-        <span className="text-blood">red</span> for outbound and{' '}
-        <span className="text-venom">purple</span> for inbound traffic from your host.
+        {topology ? (
+          <>
+            Topology:{' '}
+            <span className="font-semibold text-venom uppercase">{topology.classification}</span>
+            {topology.gateway_ip && (
+              <span className="text-neutral-500"> · gateway {topology.gateway_ip}</span>
+            )}
+            <p className="mt-1 text-xs text-neutral-500">{topology.explanation}</p>
+            <p className="mt-1 text-xs text-neutral-600">
+              Evidence: {topology.gateway_relayed_frames} frame(s) relayed via gateway MAC ·{' '}
+              {topology.local_direct_frames} frame(s) sent direct to local device MACs
+            </p>
+          </>
+        ) : (
+          <>
+            Topology: <span className="text-neutral-500">not yet measured</span>
+            <p className="mt-1 text-xs text-neutral-500">
+              Go to Live Packets and start capture — classification appears once real traffic
+              evidence comes in.
+            </p>
+          </>
+        )}
       </div>
 
       <div className="flex flex-1 gap-4 overflow-hidden">

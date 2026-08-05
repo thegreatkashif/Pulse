@@ -72,3 +72,12 @@ export interface BandwidthSample {
   bytes_out: number
   timestamp: number
 }
+
+export interface TopologyEvidence {
+  gateway_ip: string | null
+  gateway_mac: string | null
+  local_direct_frames: number
+  gateway_relayed_frames: number
+  classification: string
+  explanation: string
+}
