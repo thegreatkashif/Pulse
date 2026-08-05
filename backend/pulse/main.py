@@ -10,6 +10,7 @@ from pulse.config.settings import settings
 from pulse.topology.service import TopologyEvidence
 from pulse.websocket.manager import stats_broadcaster, packet_manager
 from pulse.websocket.router import router as websocket_router
+from pulse.database.db import init_db
 
 
 def _on_packet(event) -> None:
@@ -26,6 +27,9 @@ async def _on_topology(evidence: TopologyEvidence) -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    init_db()
+    
+    
     engine.on_packet = _on_packet
     engine.on_bandwidth = _on_bandwidth
     engine.on_topology = _on_topology
