@@ -114,3 +114,17 @@ export interface DnsQuery {
   domain: string
   resolved_ips: string | null
 }
+
+export interface CapturePreferences {
+  interface: string | null
+  port_scan_threshold: number
+  port_scan_window: number
+  spike_multiplier: number
+  spike_min_baseline: number
+  spike_sustain_samples: number
+  spike_cooldown: number
+}
+
+export interface RetentionSettings {
+  retention_days: number
+}

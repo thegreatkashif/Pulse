@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from pulse.capture.engine import engine
+from pulse.database.db import prune_old_data
 from pulse.security.detector import detector
 from pulse.settings.schemas import CapturePreferences, RetentionSettings
 from pulse.settings.service import (
@@ -46,3 +47,10 @@ async def read_retention_settings():
 async def update_retention_settings(settings: RetentionSettings):
     save_retention_settings(settings)
     return settings
+
+
+@router.post("/retention/prune")
+async def run_retention_prune():
+    settings = get_retention_settings()
+    result = prune_old_data(settings.retention_days)
+    return result

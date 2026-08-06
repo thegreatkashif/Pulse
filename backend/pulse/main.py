@@ -8,14 +8,14 @@ from pulse.capture.dns_router import router as dns_router
 from pulse.capture.engine import engine
 from pulse.capture.router import router as capture_router
 from pulse.config.settings import settings
-from pulse.database.db import get_recent_alerts, init_db
+from pulse.database.db import get_recent_alerts, init_db, prune_old_data
 from pulse.security.detector import detector
 from pulse.security.schemas import SecurityAlert
+from pulse.settings.router import router as settings_router, _apply_capture_preferences
+from pulse.settings.service import get_capture_preferences, get_retention_settings
 from pulse.topology.service import TopologyEvidence
 from pulse.websocket.manager import alert_manager, packet_manager, stats_broadcaster
 from pulse.websocket.router import router as websocket_router
-from pulse.settings.router import router as settings_router, _apply_capture_preferences
-from pulse.settings.service import get_capture_preferences
 
 
 def _on_packet(event) -> None:
@@ -34,6 +34,13 @@ def _on_alert(alert: SecurityAlert) -> None:
     asyncio.create_task(alert_manager.broadcast({"type": "alert", **alert.model_dump()}))
 
 
+async def _retention_loop(interval_seconds: float = 86400) -> None:
+    while True:
+        await asyncio.sleep(interval_seconds)
+        retention_settings = get_retention_settings()
+        prune_old_data(retention_settings.retention_days)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
@@ -45,8 +52,10 @@ async def lifespan(app: FastAPI):
     detector.on_alert = _on_alert
 
     task = asyncio.create_task(stats_broadcaster())
+    retention_task = asyncio.create_task(_retention_loop())
     yield
     task.cancel()
+    retention_task.cancel()
     engine.stop()
 
 
@@ -59,8 +68,6 @@ app = FastAPI(
 
 app.include_router(api_router)
 app.include_router(capture_router)
-app.include_router(dns_router)
-app.include_router(websocket_router)
 app.include_router(dns_router)
 app.include_router(settings_router)
 app.include_router(websocket_router)
