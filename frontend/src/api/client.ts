@@ -1,4 +1,11 @@
-import type { SystemInfo, NetworkInterface, NetworkOverview, NetworkDevice } from './types'
+import type {
+  SystemInfo,
+  NetworkInterface,
+  NetworkOverview,
+  NetworkDevice,
+  SecurityAlert,
+  DnsQuery,
+} from './types'
 
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(path)
@@ -20,4 +27,6 @@ export const api = {
   startCapture: () => post<{ running: boolean }>('/api/capture/start'),
   stopCapture: () => post<{ running: boolean }>('/api/capture/stop'),
   captureStatus: () => get<{ running: boolean }>('/api/capture/status'),
+  securityAlerts: (limit = 100) => get<SecurityAlert[]>(`/api/security/alerts?limit=${limit}`),
+  dnsRecent: (limit = 100) => get<DnsQuery[]>(`/api/dns/recent?limit=${limit}`),
 }
