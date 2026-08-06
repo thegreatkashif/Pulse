@@ -21,6 +21,7 @@ class CaptureEngine:
         self.sniffer: AsyncSniffer | None = None
         self.running: bool = False
         self.host_ip: str | None = None
+        self.preferred_interface: str | None = None
         self.local_subnet: ipaddress.IPv4Network | None = None
         self.gateway_ip: str | None = None
         self.gateway_mac: str | None = None
@@ -50,6 +51,7 @@ class CaptureEngine:
             filter=f"ip and (src host {self.host_ip} or dst host {self.host_ip})",
             prn=self._handle_packet,
             store=False,
+            iface=self.preferred_interface,
         )
         self.sniffer.start()
         self.running = True

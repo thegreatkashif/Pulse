@@ -12,6 +12,11 @@ import DeviceDetail from './pages/DeviceDetail'
 import System from './pages/System'
 import Network from './pages/Network'
 import Traffic from './pages/Traffic'
+import Logs from './pages/Logs'
+import Settings from './pages/Settings'
+import Documentation from './pages/Documentation'
+import About from './pages/About'
+
 function App() {
   useApplyTheme()
 
@@ -27,10 +32,10 @@ function App() {
         <Route path="/topology" element={<Topology />} />
         <Route path="/security" element={<Security />} />
         <Route path="/alerts" element={<Alerts />} />
-        <Route path="/logs" element={<Placeholder title="Logs" />} />
-        <Route path="/settings" element={<Placeholder title="Settings" />} />
-        <Route path="/docs" element={<Placeholder title="Documentation" />} />
-        <Route path="/about" element={<Placeholder title="About" />} />
+        <Route path="/logs" element={<Logs />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/docs" element={<Documentation />} />
+        <Route path="/about" element={<About />} />
         <Route path="/devices/:ip" element={<DeviceDetail />} />
       </Route>
     </Routes>

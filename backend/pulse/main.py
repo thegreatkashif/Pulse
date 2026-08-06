@@ -14,6 +14,8 @@ from pulse.security.schemas import SecurityAlert
 from pulse.topology.service import TopologyEvidence
 from pulse.websocket.manager import alert_manager, packet_manager, stats_broadcaster
 from pulse.websocket.router import router as websocket_router
+from pulse.settings.router import router as settings_router, _apply_capture_preferences
+from pulse.settings.service import get_capture_preferences
 
 
 def _on_packet(event) -> None:
@@ -35,6 +37,7 @@ def _on_alert(alert: SecurityAlert) -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    _apply_capture_preferences(get_capture_preferences())
 
     engine.on_packet = _on_packet
     engine.on_bandwidth = _on_bandwidth
@@ -57,6 +60,9 @@ app = FastAPI(
 app.include_router(api_router)
 app.include_router(capture_router)
 app.include_router(dns_router)
+app.include_router(websocket_router)
+app.include_router(dns_router)
+app.include_router(settings_router)
 app.include_router(websocket_router)
 
 

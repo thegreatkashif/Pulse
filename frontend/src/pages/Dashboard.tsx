@@ -59,8 +59,20 @@ export default function Dashboard() {
           accent={network.internet_connected ? 'emerald' : 'crimson'}
           sublabel={network.active_interface ?? undefined}
         />
-        <StatCard label="Disk Usage" value="—" icon={HardDrive} accent="amber" sublabel="Not available yet" />
-        <StatCard label="Temperature" value="—" icon={Thermometer} accent="amber" sublabel="Not available yet" />
+        <StatCard
+          label="Disk Usage"
+          value={`${system.disk.percent}%`}
+          icon={HardDrive}
+          accent={system.disk.percent > 90 ? 'crimson' : 'amber'}
+          sublabel={`${system.disk.used_human} / ${system.disk.total_human}`}
+        />
+        <StatCard
+          label="Temperature"
+          value={system.temperature.available ? `${system.temperature.celsius?.toFixed(1)}°C` : '—'}
+          icon={Thermometer}
+          accent={system.temperature.available ? 'emerald' : 'amber'}
+          sublabel={system.temperature.available ? system.temperature.label ?? undefined : system.temperature.note}
+        />
         <StatCard label="Interfaces" value={network.interface_count} icon={Activity} accent="electric" />
         <StatCard label="Alerts" value={0} icon={ShieldCheck} accent="emerald" sublabel="No active threats" />
       </div>

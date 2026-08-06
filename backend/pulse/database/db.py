@@ -33,6 +33,12 @@ def init_db() -> None:
                 bytes_out INTEGER NOT NULL
             )
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS settings (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            )
+        """)
         conn.commit()
 
 
@@ -97,3 +103,31 @@ def get_bandwidth_history(limit: int = 500) -> list[dict]:
             "SELECT * FROM bandwidth_history ORDER BY timestamp DESC LIMIT ?", (limit,)
         ).fetchall()
         return [dict(row) for row in reversed(rows)]
+
+
+def get_setting(key: str) -> str | None:
+    with get_connection() as conn:
+        row = conn.execute("SELECT value FROM settings WHERE key = ?", (key,)).fetchone()
+        return row[0] if row else None
+
+
+def set_setting(key: str, value: str) -> None:
+    with get_connection() as conn:
+        conn.execute(
+            """
+            INSERT INTO settings (key, value) VALUES (?, ?)
+            ON CONFLICT(key) DO UPDATE SET value = excluded.value
+            """,
+            (key, value),
+        )
+        conn.commit()
+
+
+def prune_old_data(retention_days: int) -> dict:
+    cutoff = __import__("time").time() - (retention_days * 86400)
+    with get_connection() as conn:
+        dns_deleted = conn.execute("DELETE FROM dns_queries WHERE timestamp < ?", (cutoff,)).rowcount
+        alerts_deleted = conn.execute("DELETE FROM security_alerts WHERE timestamp < ?", (cutoff,)).rowcount
+        bw_deleted = conn.execute("DELETE FROM bandwidth_history WHERE timestamp < ?", (cutoff,)).rowcount
+        conn.commit()
+    return {"dns_deleted": dns_deleted, "alerts_deleted": alerts_deleted, "bandwidth_deleted": bw_deleted}

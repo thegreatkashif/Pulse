@@ -15,6 +15,23 @@ export interface MemoryInfo {
   percent: number
 }
 
+export interface DiskInfo {
+  total_bytes: number
+  total_human: string
+  used_bytes: number
+  used_human: string
+  free_bytes: number
+  free_human: string
+  percent: number
+}
+
+export interface TemperatureInfo {
+  available: boolean
+  celsius: number | null
+  label: string | null
+  note: string
+}
+
 export interface UptimeInfo {
   boot_time: string
   uptime_seconds: number
@@ -27,6 +44,8 @@ export interface SystemInfo {
   architecture: string
   cpu: CPUInfo
   memory: MemoryInfo
+  disk: DiskInfo
+  temperature: TemperatureInfo
   uptime: UptimeInfo
 }
 
@@ -52,7 +71,7 @@ export interface NetworkDevice {
   mac: string
   hostname: string | null
   vendor: string | null
-  online:  boolean
+  online: boolean
 }
 
 export interface PacketEvent {
@@ -80,4 +99,18 @@ export interface TopologyEvidence {
   gateway_relayed_frames: number
   classification: string
   explanation: string
+}
+
+export interface SecurityAlert {
+  timestamp: number
+  severity: 'info' | 'warning' | 'critical'
+  category: 'port_scan' | 'arp_spoof' | 'traffic_spike'
+  message: string
+}
+
+export interface DnsQuery {
+  id: number
+  timestamp: number
+  domain: string
+  resolved_ips: string | null
 }

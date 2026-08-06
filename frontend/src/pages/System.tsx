@@ -1,4 +1,4 @@
-import { Cpu, MemoryStick, Clock, Server } from 'lucide-react'
+import { Cpu, MemoryStick, Clock, Server, HardDrive, Thermometer } from 'lucide-react'
 import { useStatsSocket } from '../hooks/useStatsSocket'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Skeleton } from '../components/ui/skeleton'
@@ -65,7 +65,7 @@ export default function System() {
           </CardContent>
         </Card>
 
-        <Card className="border-border bg-surface lg:col-span-2">
+        <Card className="border-border bg-surface">
           <CardHeader className="flex flex-row items-center gap-2">
             <MemoryStick size={16} className="text-emerald" />
             <CardTitle className="text-sm font-medium">Memory</CardTitle>
@@ -81,6 +81,42 @@ export default function System() {
                 transition={{ duration: 0.5 }}
               />
             </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border bg-surface">
+          <CardHeader className="flex flex-row items-center gap-2">
+            <HardDrive size={16} className="text-amber" />
+            <CardTitle className="text-sm font-medium">Disk</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <Row label="Total" value={system.disk.total_human} />
+            <Row label="Used" value={`${system.disk.used_human} (${system.disk.percent}%)`} />
+            <Row label="Free" value={system.disk.free_human} />
+            <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+              <motion.div
+                className="h-full bg-gradient-to-r from-amber to-crimson"
+                animate={{ width: `${system.disk.percent}%` }}
+                transition={{ duration: 0.5 }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border bg-surface lg:col-span-2">
+          <CardHeader className="flex flex-row items-center gap-2">
+            <Thermometer size={16} className={system.temperature.available ? 'text-emerald' : 'text-muted-foreground'} />
+            <CardTitle className="text-sm font-medium">Temperature</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            {system.temperature.available ? (
+              <>
+                <Row label="Reading" value={`${system.temperature.celsius?.toFixed(1)}°C`} />
+                <Row label="Sensor" value={system.temperature.label ?? '—'} />
+              </>
+            ) : (
+              <p className="text-muted-foreground">{system.temperature.note}</p>
+            )}
           </CardContent>
         </Card>
       </div>

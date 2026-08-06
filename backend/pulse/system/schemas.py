@@ -21,6 +21,26 @@ class MemoryInfo(BaseModel):
     percent: float
 
 
+class DiskInfo(BaseModel):
+    total_bytes: int
+    total_human: str
+
+    used_bytes: int
+    used_human: str
+
+    free_bytes: int
+    free_human: str
+
+    percent: float
+
+
+class TemperatureInfo(BaseModel):
+    available: bool
+    celsius: float | None
+    label: str | None
+    note: str
+
+
 class UptimeInfo(BaseModel):
     boot_time: str
     uptime_seconds: int
@@ -44,8 +64,11 @@ class SystemInfo(BaseModel):
 
     cpu: CPUInfo
     memory: MemoryInfo
+    disk: DiskInfo
+    temperature: TemperatureInfo
     uptime: UptimeInfo
-    
+
+
 class NetworkOverview(BaseModel):
     default_gateway: str | None
     active_interface: str | None

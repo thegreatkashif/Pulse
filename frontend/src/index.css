@@ -4,20 +4,15 @@
 @import "@fontsource-variable/geist";
 
 @custom-variant dark (&:is(.dark *));
-
 @theme {
-  --color-void: #05070a;
-  --color-surface: #0d1117;
-  --color-surface-hover: #141b24;
+  --color-void: var(--background);
+  --color-surface: var(--card);
+  --color-surface-hover: var(--secondary);
   --color-electric: #2f6fed;
   --color-cyan: #22d3ee;
   --color-emerald: #10b981;
   --color-amber: #f59e0b;
   --color-crimson: #ef4444;
-}
-
-body {
-  background-color: var(--color-void);
 }
 
 @theme inline {
