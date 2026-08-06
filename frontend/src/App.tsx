@@ -2,6 +2,8 @@ import { Routes, Route } from 'react-router-dom'
 import AppShell from './layout/AppShell'
 import Placeholder from './pages/Placeholder'
 import { useApplyTheme } from './hooks/use-apply-theme'
+import Dashboard from './pages/Dashboard'
+import Topology from './pages/Topology'
 
 function App() {
   useApplyTheme()
@@ -9,13 +11,13 @@ function App() {
   return (
     <Routes>
       <Route element={<AppShell />}>
-        <Route path="/" element={<Placeholder title="Dashboard" />} />
+        <Route path="/" element={<Dashboard />} />
         <Route path="/system" element={<Placeholder title="System" />} />
         <Route path="/network" element={<Placeholder title="Network" />} />
         <Route path="/devices" element={<Placeholder title="Devices" />} />
         <Route path="/capture" element={<Placeholder title="Packet Capture" />} />
         <Route path="/traffic" element={<Placeholder title="Traffic" />} />
-        <Route path="/topology" element={<Placeholder title="Topology" />} />
+        <Route path="/topology" element={<Topology />} />
         <Route path="/security" element={<Placeholder title="Security" />} />
         <Route path="/alerts" element={<Placeholder title="Alerts" />} />
         <Route path="/logs" element={<Placeholder title="Logs" />} />
