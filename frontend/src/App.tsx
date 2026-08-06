@@ -9,6 +9,9 @@ import Security from './pages/Security'
 import Alerts from './pages/Alerts'
 import Devices from './pages/Devices'
 import DeviceDetail from './pages/DeviceDetail'
+import System from './pages/System'
+import Network from './pages/Network'
+import Traffic from './pages/Traffic'
 function App() {
   useApplyTheme()
 
@@ -16,11 +19,11 @@ function App() {
     <Routes>
       <Route element={<AppShell />}>
         <Route path="/" element={<Dashboard />} />
-        <Route path="/system" element={<Placeholder title="System" />} />
-        <Route path="/network" element={<Placeholder title="Network" />} />
+        <Route path="/system" element={<System />} />
+        <Route path="/network" element={<Network />} />
         <Route path="/devices" element={<Devices />} />
-       <Route path="/capture" element={<PacketCapture />} />
-        <Route path="/traffic" element={<Placeholder title="Traffic" />} />
+        <Route path="/capture" element={<PacketCapture />} />
+        <Route path="/traffic" element={<Traffic />} />
         <Route path="/topology" element={<Topology />} />
         <Route path="/security" element={<Security />} />
         <Route path="/alerts" element={<Alerts />} />
