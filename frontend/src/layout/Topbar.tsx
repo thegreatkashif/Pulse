@@ -1,4 +1,4 @@
-import { Bell, Search, Sun, Moon, Monitor } from 'lucide-react'
+import { Bell, Search, Sun, Moon, Monitor, Menu } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,11 +11,19 @@ import { useUIStore } from '../store/ui-store'
 export default function Topbar() {
   const theme = useUIStore((s) => s.theme)
   const setTheme = useUIStore((s) => s.setTheme)
+  const setMobileOpen = useUIStore((s) => s.setMobileOpen)
 
   const ThemeIcon = theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor
 
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface/80 px-4 backdrop-blur">
+      <button
+        onClick={() => setMobileOpen(true)}
+        className="mr-2 rounded-md p-2 text-muted-foreground hover:bg-secondary hover:text-foreground md:hidden"
+      >
+        <Menu size={18} />
+      </button>
+
       <div className="flex flex-1 items-center gap-2">
         <div className="relative w-full max-w-sm">
           <Search size={15} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -28,7 +36,7 @@ export default function Topbar() {
       </div>
 
       <div className="flex items-center gap-3">
-        <Badge variant="outline" className="gap-1.5 border-emerald/40 text-emerald">
+        <Badge variant="outline" className="hidden gap-1.5 border-emerald/40 text-emerald sm:flex">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald" />
           System healthy
         </Badge>

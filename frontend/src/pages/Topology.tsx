@@ -86,7 +86,7 @@ export default function Topology() {
   }, [devices, network])
 
   return (
-    <div className="flex h-[calc(100vh-7rem)] min-h-0 flex-col gap-4">
+    <div className="flex h-[calc(100vh-8rem)] min-h-0 flex-col gap-4 md:h-[calc(100vh-7rem)]">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Topology</h1>
         <p className="text-sm text-muted-foreground">Live-inferred network layout from ARP + captured frame evidence</p>

@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard,
   Cpu,
@@ -15,6 +15,7 @@ import {
   BookOpen,
   Info,
   ChevronLeft,
+  X,
 } from 'lucide-react'
 import { useUIStore } from '../store/ui-store'
 import { cn } from '../lib/utils'
@@ -38,44 +39,90 @@ const FOOTER_ITEMS = [
   { to: '/about', label: 'About', icon: Info },
 ]
 
+function SidebarContent({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?: () => void }) {
+  return (
+    <>
+      <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-2">
+        {NAV_ITEMS.map((item) => (
+          <SidebarLink key={item.to} {...item} collapsed={collapsed} onClick={onNavigate} />
+        ))}
+      </nav>
+      <div className="space-y-1 border-t border-sidebar-border px-2 py-2">
+        {FOOTER_ITEMS.map((item) => (
+          <SidebarLink key={item.to} {...item} collapsed={collapsed} onClick={onNavigate} />
+        ))}
+      </div>
+    </>
+  )
+}
+
 export default function Sidebar() {
   const collapsed = useUIStore((s) => s.sidebarCollapsed)
   const toggleSidebar = useUIStore((s) => s.toggleSidebar)
+  const mobileOpen = useUIStore((s) => s.mobileOpen)
+  const setMobileOpen = useUIStore((s) => s.setMobileOpen)
 
   return (
-    <motion.aside
-      animate={{ width: collapsed ? 64 : 232 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="flex h-screen shrink-0 flex-col border-r border-border bg-sidebar"
-    >
-      <div className="flex h-14 items-center justify-between px-3">
-        {!collapsed && (
-          <span className="bg-gradient-to-r from-electric to-cyan bg-clip-text text-lg font-bold tracking-tight text-transparent">
-            PULSE
-          </span>
+    <>
+      {/* Desktop: fixed sidebar, always visible, collapsible to icons */}
+      <motion.aside
+        animate={{ width: collapsed ? 64 : 232 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        className="hidden h-screen shrink-0 flex-col border-r border-border bg-sidebar md:flex"
+      >
+        <div className="flex h-14 items-center justify-between px-3">
+          {!collapsed && (
+            <span className="bg-gradient-to-r from-electric to-cyan bg-clip-text text-lg font-bold tracking-tight text-transparent">
+              PULSE
+            </span>
+          )}
+          <button
+            onClick={toggleSidebar}
+            className="rounded-md p-1.5 text-muted-foreground transition hover:bg-sidebar-accent hover:text-foreground"
+          >
+            <motion.span animate={{ rotate: collapsed ? 180 : 0 }} className="block">
+              <ChevronLeft size={16} />
+            </motion.span>
+          </button>
+        </div>
+        <SidebarContent collapsed={collapsed} />
+      </motion.aside>
+
+      {/* Mobile: off-canvas drawer, opened via topbar hamburger */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileOpen(false)}
+              className="fixed inset-0 z-40 bg-black/60 md:hidden"
+            />
+            <motion.aside
+              initial={{ x: -260 }}
+              animate={{ x: 0 }}
+              exit={{ x: -260 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-border bg-sidebar md:hidden"
+            >
+              <div className="flex h-14 items-center justify-between px-3">
+                <span className="bg-gradient-to-r from-electric to-cyan bg-clip-text text-lg font-bold tracking-tight text-transparent">
+                  PULSE
+                </span>
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-md p-1.5 text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <SidebarContent collapsed={false} onNavigate={() => setMobileOpen(false)} />
+            </motion.aside>
+          </>
         )}
-        <button
-          onClick={toggleSidebar}
-          className="rounded-md p-1.5 text-muted-foreground transition hover:bg-sidebar-accent hover:text-foreground"
-        >
-          <motion.span animate={{ rotate: collapsed ? 180 : 0 }} className="block">
-            <ChevronLeft size={16} />
-          </motion.span>
-        </button>
-      </div>
-
-      <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-2">
-        {NAV_ITEMS.map((item) => (
-          <SidebarLink key={item.to} {...item} collapsed={collapsed} />
-        ))}
-      </nav>
-
-      <div className="space-y-1 border-t border-sidebar-border px-2 py-2">
-        {FOOTER_ITEMS.map((item) => (
-          <SidebarLink key={item.to} {...item} collapsed={collapsed} />
-        ))}
-      </div>
-    </motion.aside>
+      </AnimatePresence>
+    </>
   )
 }
 
@@ -84,16 +131,19 @@ function SidebarLink({
   label,
   icon: Icon,
   collapsed,
+  onClick,
 }: {
   to: string
   label: string
   icon: React.ComponentType<{ size?: number }>
   collapsed: boolean
+  onClick?: () => void
 }) {
   return (
     <NavLink
       to={to}
       end={to === '/'}
+      onClick={onClick}
       className={({ isActive }) =>
         cn(
           'flex items-center gap-3 rounded-md px-2.5 py-2 text-sm transition-colors',
