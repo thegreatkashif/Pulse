@@ -4,6 +4,7 @@ import Placeholder from './pages/Placeholder'
 import { useApplyTheme } from './hooks/use-apply-theme'
 import Dashboard from './pages/Dashboard'
 import Topology from './pages/Topology'
+import PacketCapture from './pages/PacketCapture'
 
 function App() {
   useApplyTheme()
@@ -15,7 +16,7 @@ function App() {
         <Route path="/system" element={<Placeholder title="System" />} />
         <Route path="/network" element={<Placeholder title="Network" />} />
         <Route path="/devices" element={<Placeholder title="Devices" />} />
-        <Route path="/capture" element={<Placeholder title="Packet Capture" />} />
+       <Route path="/capture" element={<PacketCapture />} />
         <Route path="/traffic" element={<Placeholder title="Traffic" />} />
         <Route path="/topology" element={<Topology />} />
         <Route path="/security" element={<Placeholder title="Security" />} />
