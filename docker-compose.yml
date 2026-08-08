@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - pulse-data:/app/data
+    # Packet capture requires elevated network access. This works on Linux
+    # hosts; on Windows/macOS Docker Desktop, capture will not see real
+    # host traffic due to the VM network boundary — run the backend
+    # natively there instead (see README).
+    network_mode: host
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  pulse-data:
