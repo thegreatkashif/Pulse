@@ -1,23 +1,32 @@
+name: pulse
+
 services:
   backend:
     build:
       context: .
       dockerfile: backend/Dockerfile
-    ports:
-      - "8000:8000"
-    volumes:
-      - pulse-data:/app/backend/data
-    network_mode: host
     cap_add:
       - NET_RAW
       - NET_ADMIN
+    environment:
+      PORT: "8001"
+    network_mode: host
+    ports:
+      - "8001:8001"
+    volumes:
+      - pulse-data:/app/backend/data
 
   frontend:
-    build: ./frontend
-    ports:
-      - "5173:80"
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
-      - backend
+      backend:
+        condition: service_started
+    ports:
+      - "5174:80"
 
 volumes:
   pulse-data:
