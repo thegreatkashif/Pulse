@@ -40,8 +40,9 @@ class CaptureEngine:
     def start(self) -> None:
         if self.running:
             return
+        from pulse.utils.network import get_local_ip
 
-        self.host_ip = socket.gethostbyname(socket.gethostname())
+        self.host_ip = get_local_ip()
         self.local_subnet = ipaddress.ip_network(get_local_network(), strict=False)
         self.gateway_ip = get_default_gateway()
         self.gateway_mac = getmacbyip(self.gateway_ip) if self.gateway_ip else None

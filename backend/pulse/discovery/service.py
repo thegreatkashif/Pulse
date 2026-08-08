@@ -8,9 +8,9 @@ from pulse.security.detector import detector
 
 
 def get_local_network() -> str:
-    hostname = socket.gethostname()
-    ip = socket.gethostbyname(hostname)
+    from pulse.utils.network import get_local_ip
 
+    ip = get_local_ip()
     network = ipaddress.ip_network(f"{ip}/24", strict=False)
 
     return str(network)
