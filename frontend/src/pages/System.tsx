@@ -1,4 +1,4 @@
-import { Cpu, MemoryStick, Clock, Server, HardDrive, Thermometer } from 'lucide-react'
+import { Cpu, MemoryStick, Server, HardDrive, Thermometer } from 'lucide-react'
 import { useStatsSocket } from '../hooks/useStatsSocket'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Skeleton } from '../components/ui/skeleton'

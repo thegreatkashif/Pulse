@@ -1,6 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
 import AppShell from './layout/AppShell'
-import Placeholder from './pages/Placeholder'
 import { useApplyTheme } from './hooks/use-apply-theme'
 import Dashboard from './pages/Dashboard'
 import Topology from './pages/Topology'

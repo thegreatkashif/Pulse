@@ -5,7 +5,6 @@ import { useAlertSocket } from '../hooks/useAlertSocket'
 import { api } from '../api/client'
 import type { DnsQuery } from '../api/types'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
-import { Badge } from '../components/ui/badge'
 import { ScrollArea } from '../components/ui/scroll-area'
 
 const CATEGORY_LABELS: Record<string, string> = {
