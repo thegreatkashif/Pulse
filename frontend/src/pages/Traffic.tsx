@@ -57,15 +57,17 @@ export default function Traffic() {
             {bwData.length === 0 ? (
               <p className="py-12 text-center text-sm text-muted-foreground">No data yet — start capture on Packet Capture.</p>
             ) : (
-              <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={bwData}>
-                  <XAxis dataKey="time" hide />
-                  <YAxis stroke="var(--color-muted-foreground)" fontSize={10} />
-                  <Tooltip contentStyle={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', fontSize: 12 }} />
-                  <Line type="monotone" dataKey="in" stroke="var(--color-cyan)" dot={false} strokeWidth={2} name="In" />
-                  <Line type="monotone" dataKey="out" stroke="var(--color-electric)" dot={false} strokeWidth={2} name="Out" />
-                </LineChart>
-              </ResponsiveContainer>
+              <div style={{ width: '100%', height: 220 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={bwData}>
+                    <XAxis dataKey="time" hide />
+                    <YAxis stroke="var(--color-muted-foreground)" fontSize={10} />
+                    <Tooltip contentStyle={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', fontSize: 12 }} />
+                    <Line type="monotone" dataKey="in" stroke="var(--color-cyan)" dot={false} strokeWidth={2} name="In" />
+                    <Line type="monotone" dataKey="out" stroke="var(--color-electric)" dot={false} strokeWidth={2} name="Out" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -78,16 +80,16 @@ export default function Traffic() {
             {protocolData.length === 0 ? (
               <p className="py-12 text-center text-sm text-muted-foreground">No packets captured yet.</p>
             ) : (
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie data={protocolData} dataKey="value" nameKey="name" innerRadius={40} outerRadius={70}>
+             <div className="flex justify-center">
+                <PieChart width={260} height={200}>
+                  <Pie data={protocolData} dataKey="value" nameKey="name" cx={130} cy={100} innerRadius={40} outerRadius={70} isAnimationActive={false}>
                     {protocolData.map((_, i) => (
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip contentStyle={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', fontSize: 12 }} />
                 </PieChart>
-              </ResponsiveContainer>
+              </div>
             )}
             <div className="mt-2 flex flex-wrap gap-2 text-xs">
               {protocolData.map((p, i) => (
