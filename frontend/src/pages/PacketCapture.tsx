@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Play, Square, ArrowDown, ArrowUp, Radio } from 'lucide-react'
 import { usePacketSocket } from '../hooks/usePacketSocket'
@@ -28,6 +28,9 @@ function formatBytes(num: number): string {
 export default function PacketCapture() {
   const { packets, bandwidth, connected } = usePacketSocket()
   const [capturing, setCapturing] = useState(false)
+  useEffect(() => {
+    api.captureStatus().then((res) => setCapturing(res.running)).catch(() => {})
+  }, [])
   const [busy, setBusy] = useState(false)
   const [selected, setSelected] = useState<PacketEvent | null>(null)
 

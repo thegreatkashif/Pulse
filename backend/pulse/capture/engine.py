@@ -60,10 +60,20 @@ class CaptureEngine:
     def stop(self) -> None:
         if not self.running:
             return
+
         if self.sniffer:
-            self.sniffer.stop()
+            try:
+                self.sniffer.stop()
+            except Exception:
+                # Scapy raises if its internal sniffer thread already stopped
+                # itself (e.g. a race from a rapid stop/start click). Our own
+                # self.running flag is the source of truth for the rest of the
+                # app either way, so this is safe to ignore.
+                pass
+
         if self._bandwidth_task:
             self._bandwidth_task.cancel()
+
         self.running = False
         self._local_direct_frames = 0
         self._gateway_relayed_frames = 0

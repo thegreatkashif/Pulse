@@ -17,11 +17,11 @@ def get_network_interfaces() -> list[NetworkInterface]:
 
         for addr in addrs:
             # Windows/Linux IPv4
-            if addr.family.name == socket.AF_INET:
+            if addr.family == socket.AF_INET:
                 ipv4.append(addr.address)
 
             # Windows/Linux IPv6
-            elif addr.family.name == socket.AF_INET6:
+            elif addr.family == socket.AF_INET6:
                 ipv6.append(addr.address.split("%")[0])
 
             # MAC Address
